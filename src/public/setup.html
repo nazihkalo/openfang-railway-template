@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OpenFang Railway Setup</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #050b14;
+        --panel: rgba(12, 20, 35, 0.88);
+        --panel-2: rgba(16, 28, 48, 0.72);
+        --text: #e8eef8;
+        --muted: #99a9c2;
+        --border: rgba(148, 163, 184, 0.18);
+        --accent: #71d0ff;
+        --success: #74e39b;
+        --warn: #f5c971;
+        --danger: #ff8b8b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(54, 110, 167, 0.26), transparent 40%),
+          linear-gradient(180deg, #09111f 0%, var(--bg) 100%);
+        color: var(--text);
+      }
+
+      .wrap {
+        width: min(1120px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 32px 0 48px;
+      }
+
+      .hero,
+      .panel {
+        background: var(--panel);
+        backdrop-filter: blur(18px);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
+      }
+
+      .hero {
+        padding: 28px;
+        margin-bottom: 20px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(113, 208, 255, 0.12);
+        color: var(--accent);
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 16px 0 10px;
+        font-size: clamp(32px, 5vw, 48px);
+        line-height: 1.05;
+      }
+
+      p {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .actions,
+      .grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .actions {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        margin-top: 22px;
+      }
+
+      .grid {
+        grid-template-columns: 1.4fr 1fr;
+      }
+
+      .panel {
+        padding: 22px;
+      }
+
+      .panel h2 {
+        margin-top: 0;
+        margin-bottom: 14px;
+        font-size: 20px;
+      }
+
+      .button {
+        appearance: none;
+        border: 0;
+        border-radius: 16px;
+        padding: 14px 16px;
+        font: inherit;
+        font-weight: 700;
+        color: #04101c;
+        background: linear-gradient(135deg, #8ce0ff 0%, #67b1ff 100%);
+        cursor: pointer;
+      }
+
+      .button.secondary {
+        color: var(--text);
+        background: rgba(148, 163, 184, 0.12);
+        border: 1px solid var(--border);
+      }
+
+      .button.ghost {
+        color: var(--muted);
+        background: transparent;
+        border: 1px dashed var(--border);
+      }
+
+      .button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+
+      .status-list,
+      .steps,
+      .env-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .status-row,
+      .env-row,
+      .step {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: var(--panel-2);
+        border: 1px solid rgba(148, 163, 184, 0.12);
+      }
+
+      .status-meta,
+      .step-copy {
+        min-width: 0;
+      }
+
+      .status-meta strong,
+      .env-row strong,
+      .step-copy strong {
+        display: block;
+      }
+
+      .badge {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 86px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .badge.success {
+        color: #06250f;
+        background: var(--success);
+      }
+
+      .badge.warn {
+        color: #2d1c04;
+        background: var(--warn);
+      }
+
+      .badge.danger {
+        color: #310808;
+        background: var(--danger);
+      }
+
+      .code {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: rgba(0, 0, 0, 0.26);
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 320px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: rgba(2, 8, 15, 0.72);
+        color: var(--text);
+        font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        resize: vertical;
+      }
+
+      .subtle {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+
+      .message {
+        margin-top: 12px;
+        min-height: 20px;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="hero">
+        <div class="eyebrow">OpenFang on Railway</div>
+        <h1>Deploy once, finish setup in the browser.</h1>
+        <p>
+          This wrapper keeps OpenFang persistent on a Railway volume, handles auth handoff into the native
+          dashboard, and gives you a safe overlay file for any advanced config from the OpenFang docs.
+        </p>
+
+        <div class="actions">
+          <button class="button" id="open-dashboard">Open Dashboard</button>
+          <button class="button secondary" id="open-wizard">Open Wizard</button>
+          <button class="button secondary" id="restart-daemon">Restart Daemon</button>
+          <a class="button ghost" href="https://www.openfang.sh/docs/configuration" target="_blank" rel="noreferrer">
+            Open Config Docs
+          </a>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="panel">
+          <h2>Status</h2>
+          <div class="status-list" id="status-list"></div>
+
+          <div class="code" id="config-paths"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Fast Path</h2>
+          <div class="steps">
+            <div class="step">
+              <div class="step-copy">
+                <strong>1. Keep these variables set</strong>
+                <span class="subtle">`SETUP_PASSWORD`, `OPENFANG_API_KEY`, plus one provider key.</span>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-copy">
+                <strong>2. Open the native dashboard</strong>
+                <span class="subtle">The buttons above inject the OpenFang API token into browser storage for you.</span>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-copy">
+                <strong>3. Use the built-in OpenFang wizard</strong>
+                <span class="subtle">Save provider keys, create agents, and configure channels from the real app.</span>
+              </div>
+            </div>
+          </div>
+
+          <h2 style="margin-top: 20px">Environment</h2>
+          <div class="env-list" id="env-list"></div>
+        </section>
+      </div>
+
+      <section class="panel" style="margin-top: 20px">
+        <h2>Advanced Config Overlay</h2>
+        <p>
+          Edit <code>/data/config.user.toml</code> here. It is included automatically by the generated base config,
+          so you can use any valid section from the OpenFang configuration reference without touching the generated
+          bootstrap file.
+        </p>
+        <p class="subtle">
+          Leave wrapper-owned root keys alone: <code>include</code>, <code>home_dir</code>, <code>data_dir</code>,
+          <code>api_listen</code>, and <code>api_key</code>. Everything else is fair game.
+        </p>
+        <textarea id="user-config" spellcheck="false"></textarea>
+        <div class="toolbar">
+          <button class="button" id="save-config">Save Overlay And Restart</button>
+          <button class="button secondary" id="reload-config">Reload From Disk</button>
+        </div>
+        <div class="message" id="config-message"></div>
+      </section>
+
+      <section class="panel" style="margin-top: 20px">
+        <h2>Live Logs</h2>
+        <p class="subtle">Useful when upstream `main` changes or the daemon is still starting.</p>
+        <div class="code" id="logs">(waiting for logs)</div>
+      </section>
+    </div>
+
+    <script type="module" src="/setup/assets/setup.js"></script>
+  </body>
+</html>
