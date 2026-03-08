@@ -1,5 +1,7 @@
 # OpenFang Railway Template
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/hHYsOJ?referralCode=kqUIiG&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
 Deploy [OpenFang](https://www.openfang.sh/docs/getting-started) on Railway with an OpenClaw-style setup flow:
 
 - password-protected `/setup`
