@@ -4,6 +4,7 @@ FROM rust:1-slim-bookworm AS builder
 
 ARG OPENFANG_REPO=https://github.com/RightNow-AI/openfang.git
 ARG OPENFANG_REF=main
+ARG CACHE_BUST=1
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -15,7 +16,8 @@ RUN apt-get update \
 
 WORKDIR /build
 
-RUN git clone "${OPENFANG_REPO}" source \
+RUN echo "cache-bust: ${CACHE_BUST}" \
+ && git clone "${OPENFANG_REPO}" source \
  && cd source \
  && git checkout "${OPENFANG_REF}" \
  && cargo build --release --bin openfang
