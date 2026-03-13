@@ -12,6 +12,9 @@ RUN apt-get update \
     git \
     libssl-dev \
     pkg-config \
+    clang \
+    libclang-dev \
+    cmake \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /build
@@ -20,10 +23,10 @@ RUN echo "cache-bust: ${CACHE_BUST}" \
  && git clone "${OPENFANG_REPO}" source \
  && cd source \
  && git checkout "${OPENFANG_REF}" \
- && cargo build --release --bin openfang
+ && cargo build --workspace --release
 
 
-FROM node:22-bookworm-slim
+FROM debian:bookworm-slim
 
 RUN apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -37,26 +40,23 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY package.json ./
-RUN npm install --omit=dev
-
-COPY src ./src
-COPY --chmod=755 entrypoint.sh ./entrypoint.sh
 COPY --from=builder /build/source/target/release/openfang /usr/local/bin/openfang
-COPY --from=builder /build/source/agents /opt/openfang/agents
 
 RUN groupadd --system openfang \
  && useradd --system --create-home --gid openfang openfang \
- && mkdir -p /data \
- && chown -R openfang:openfang /app /data /opt/openfang
+ && mkdir -p /data/agents \
+ && chown -R openfang:openfang /app /data
 
-ENV NODE_ENV=production
-ENV PORT=8080
+COPY --from=builder --chown=openfang:openfang /build/source/agents /data/agents
+
 ENV OPENFANG_HOME=/data
+ENV PORT=4200
 
-EXPOSE 8080
+EXPOSE 4200
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=5 \
- CMD curl -fsS http://127.0.0.1:8080/setup/healthz || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=5 \
+  CMD curl -fsS http://127.0.0.1:4200/api/health || exit 1
 
-ENTRYPOINT ["./entrypoint.sh"]
+USER openfang
+
+ENTRYPOINT ["/usr/local/bin/openfang", "start", "--host", "0.0.0.0", "--port", "4200"]
